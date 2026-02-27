@@ -1,0 +1,44 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+:root {
+  --background: #f9fafb;
+  --foreground: #111827;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+}
+
+/* Leaflet tooltip overrides */
+.leaflet-tooltip {
+  background: rgba(17, 24, 39, 0.9) !important;
+  border: none !important;
+  color: #f9fafb !important;
+  font-size: 11px !important;
+  padding: 6px 10px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+}
+
+.leaflet-tooltip-top:before {
+  border-top-color: rgba(17, 24, 39, 0.9) !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
+}
