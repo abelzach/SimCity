@@ -45,11 +45,18 @@ def _parse_policy_with_llm(policy: str, graph_data: Dict) -> Dict[str, Any]:
     """Use LLM to extract structured policy parameters."""
     client = Anthropic()
 
-    # Sample road names from the graph for context
-    edge_names = list(set(
-        e.get("name", "") for e in list(graph_data["edges"].values())[:200]
+    # Sample road names from the graph for context.
+    # OSM 'name' can be a list when a segment has multiple names — flatten to str.
+    def _normalize_name(val) -> str:
+        if isinstance(val, list):
+            return val[0] if val else ""
+        return str(val) if val else ""
+
+    edge_names = list({
+        _normalize_name(e.get("name", ""))
+        for e in list(graph_data["edges"].values())[:200]
         if e.get("name")
-    ))[:20]
+    } - {""})[:20]
 
     prompt = f"""You are an urban policy analyst for Kochi, Kerala, India.
 
@@ -110,11 +117,17 @@ def _apply_policy_to_graph(
     total_edges = len(edges)
     target_count = max(1, int(total_edges * affected_pct))
 
-    # Find edges matching keywords or randomly select if no keywords
+    # Find edges matching keywords or randomly select if no keywords.
+    # name/highway can be lists in OSM data — normalise to a single lowercase string.
+    def _to_str(val) -> str:
+        if isinstance(val, list):
+            return " ".join(str(v) for v in val).lower()
+        return str(val).lower() if val else ""
+
     matching_edges = []
     for eid, edata in edges.items():
-        name = str(edata.get("name", "")).lower()
-        hw = str(edata.get("highway", "")).lower()
+        name = _to_str(edata.get("name", ""))
+        hw = _to_str(edata.get("highway", ""))
         if keywords and any(kw in name or kw in hw for kw in keywords):
             matching_edges.append(eid)
 
