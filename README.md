@@ -25,15 +25,15 @@ FastAPI + SSE → Next.js Dashboard
 
 ## Tech Stack
 
-| Component | Technology |
-|---|---|
-| Multi-agent orchestration | LangGraph |
-| LLM | Anthropic Claude (claude-sonnet-4-6) |
-| City data | OSMnx (OpenStreetMap) |
-| Traffic simulation | NetworkX |
-| Backend API | FastAPI + Server-Sent Events |
-| Frontend | Next.js 14 + Tailwind CSS |
-| Map | Leaflet.js |
+| Component                 | Technology                           |
+| ------------------------- | ------------------------------------ |
+| Multi-agent orchestration | LangGraph                            |
+| LLM                       | Anthropic Claude (claude-sonnet-4-6) |
+| City data                 | OSMnx (OpenStreetMap)                |
+| Traffic simulation        | NetworkX                             |
+| Backend API               | FastAPI + Server-Sent Events         |
+| Frontend                  | Next.js 14 + Tailwind CSS            |
+| Map                       | Leaflet.js                           |
 
 ## Quick Start
 
@@ -68,12 +68,12 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ## Policy Scenarios (Demo Presets)
 
-| Preset | Type | Description |
-|---|---|---|
-| Pedestrianize MG Road | Road Closure | Convert Mahatma Gandhi Road to car-free pedestrian zone |
-| Add BRT on NH-66 | New Route | Bus Rapid Transit corridor from Edappally to Tripunithura |
-| AI Signal Optimization | Signal Timing | Adaptive signals at 15 key intersections |
-| Expand Water Taxi | Transit Add | 8 new ferry routes across Vembanad backwaters |
+| Preset                 | Type          | Description                                               |
+| ---------------------- | ------------- | --------------------------------------------------------- |
+| Pedestrianize MG Road  | Road Closure  | Convert Mahatma Gandhi Road to car-free pedestrian zone   |
+| Add BRT on NH-66       | New Route     | Bus Rapid Transit corridor from Edappally to Tripunithura |
+| AI Signal Optimization | Signal Timing | Adaptive signals at 15 key intersections                  |
+| Expand Water Taxi      | Transit Add   | 8 new ferry routes across Vembanad backwaters             |
 
 ## How It Works
 
@@ -82,16 +82,23 @@ Open [http://localhost:3000](http://localhost:3000)
 3. **See the impact** — color-coded map shows before/after congestion levels
 4. **Read the report** — Claude generates a structured Go/No-Go policy recommendation
 
+## Application Images
+
+![Application Screenshot 1](image_1.png)
+![Application Screenshot 2](image_2.png)
+![Application Screenshot 3](Image_3.png)
+![Application Screenshot 4](image_4.png)
+
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/city/kochi` | Kochi road network as GeoJSON |
-| `GET` | `/api/city/kochi/metrics` | Baseline traffic metrics |
-| `GET` | `/api/presets` | Pre-built policy presets |
-| `POST` | `/api/simulate` | Start simulation, returns `job_id` |
-| `GET` | `/api/simulate/{id}/stream` | SSE stream of agent updates |
-| `GET` | `/api/simulate/{id}/result` | Final simulation result |
+| Method | Endpoint                    | Description                        |
+| ------ | --------------------------- | ---------------------------------- |
+| `GET`  | `/api/city/kochi`           | Kochi road network as GeoJSON      |
+| `GET`  | `/api/city/kochi/metrics`   | Baseline traffic metrics           |
+| `GET`  | `/api/presets`              | Pre-built policy presets           |
+| `POST` | `/api/simulate`             | Start simulation, returns `job_id` |
+| `GET`  | `/api/simulate/{id}/stream` | SSE stream of agent updates        |
+| `GET`  | `/api/simulate/{id}/result` | Final simulation result            |
 
 ## Project Structure
 
