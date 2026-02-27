@@ -8,6 +8,7 @@ from typing import AsyncGenerator, Dict, Any
 from langgraph.graph import StateGraph, END
 
 from core.state import SimCityState
+from core.city_model import graph_to_geojson, state_dict_to_graph
 from agents.data_ingestion import data_ingestion_agent
 from agents.simulation_engine import simulation_engine_agent
 from agents.citizen_proxy import citizen_proxy_agent
@@ -147,6 +148,27 @@ async def run_simulation_stream(
                     "key": "baseline_metrics",
                     "data": node_output.get("baseline_metrics", {}),
                 }
+            elif node_name == "policy_testing":
+                # Convert modified graph data to GeoJSON for frontend
+                modified_graph_data = node_output.get("modified_graph_data", {})
+                if modified_graph_data:
+                    try:
+                        # Convert state dict back to NetworkX graph
+                        G = state_dict_to_graph(modified_graph_data)
+                        # Convert to GeoJSON
+                        modified_geojson = graph_to_geojson(G)
+                        yield {
+                            "type": "data",
+                            "key": "modified_graph_data",
+                            "data": {"geojson": modified_geojson},
+                        }
+                    except Exception as e:
+                        logger.error(f"Error converting modified graph to GeoJSON: {e}")
+                        yield {
+                            "type": "data",
+                            "key": "modified_graph_data",
+                            "data": {"geojson": None},
+                        }
             elif node_name == "impact_analysis":
                 yield {
                     "type": "data",
@@ -158,6 +180,12 @@ async def run_simulation_stream(
                     "type": "data",
                     "key": "citizen_profiles",
                     "data": node_output.get("citizen_profiles", []),
+                }
+            elif node_name == "recommendation":
+                yield {
+                    "type": "data",
+                    "key": "recommendations",
+                    "data": node_output.get("recommendations", ""),
                 }
 
     yield {"type": "complete", "message": "Simulation completed"}

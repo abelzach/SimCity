@@ -41,9 +41,12 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 export default function Home() {
   const [presets, setPresets] = useState<PolicyPreset[]>([]);
-  const [baselineGeoJSON, setBaselineGeoJSON] = useState<GeoJSONFeatureCollection | null>(null);
-  const [modifiedGeoJSON, setModifiedGeoJSON] = useState<GeoJSONFeatureCollection | null>(null);
-  const [baselineMetrics, setBaselineMetrics] = useState<BaselineMetrics | null>(null);
+  const [baselineGeoJSON, setBaselineGeoJSON] =
+    useState<GeoJSONFeatureCollection | null>(null);
+  const [modifiedGeoJSON, setModifiedGeoJSON] =
+    useState<GeoJSONFeatureCollection | null>(null);
+  const [baselineMetrics, setBaselineMetrics] =
+    useState<BaselineMetrics | null>(null);
   const [impactScores, setImpactScores] = useState<ImpactScores | null>(null);
   const [recommendations, setRecommendations] = useState<string | null>(null);
   const [agents, setAgents] = useState<AgentStatus[]>(initialAgents());
@@ -83,7 +86,9 @@ export default function Home() {
           const event: StreamEvent = JSON.parse(e.data);
 
           if (event.type === "agent_complete" && event.agent) {
-            const completedIdx = AGENT_ORDER.findIndex((o) => o.name === event.agent);
+            const completedIdx = AGENT_ORDER.findIndex(
+              (o) => o.name === event.agent,
+            );
             setAgents((prev) =>
               prev.map((a, i) => {
                 if (a.name === event.agent) {
@@ -97,12 +102,25 @@ export default function Home() {
                   return { ...a, status: "running" };
                 }
                 return a;
-              })
+              }),
             );
           }
 
           if (event.type === "data" && event.key === "impact_scores") {
             setImpactScores(event.data as ImpactScores);
+          }
+
+          if (event.type === "data" && event.key === "modified_graph_data") {
+            // Convert modified graph data to GeoJSON format
+            const modifiedData = event.data as {
+              geojson?: GeoJSONFeatureCollection;
+            };
+            const modifiedGeoJSON = modifiedData.geojson || null;
+            setModifiedGeoJSON(modifiedGeoJSON);
+          }
+
+          if (event.type === "data" && event.key === "recommendations") {
+            setRecommendations(event.data as string);
           }
 
           if (event.type === "complete") {
@@ -135,14 +153,14 @@ export default function Home() {
         };
 
         setAgents((prev) =>
-          prev.map((a, i) => (i === 0 ? { ...a, status: "running" } : a))
+          prev.map((a, i) => (i === 0 ? { ...a, status: "running" } : a)),
         );
       } catch (err) {
         console.error(err);
         setIsLoading(false);
       }
     },
-    [isLoading]
+    [isLoading],
   );
 
   return (
@@ -155,16 +173,23 @@ export default function Home() {
           </div>
           <div>
             <div className="font-bold text-sm tracking-wide">SimCity AI</div>
-            <div className="text-xs text-gray-400">Kochi Digital Twin — Policy Simulator</div>
+            <div className="text-xs text-gray-400">
+              Kochi Digital Twin — Policy Simulator
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-4">
           {baselineMetrics && (
             <div className="hidden md:flex items-center gap-4 text-xs text-gray-400">
-              <span>{baselineMetrics.total_nodes.toLocaleString()} intersections</span>
-              <span>{baselineMetrics.total_edges.toLocaleString()} road segments</span>
               <span>
-                {(baselineMetrics.avg_congestion_ratio * 100).toFixed(0)}% avg congestion
+                {baselineMetrics.total_nodes.toLocaleString()} intersections
+              </span>
+              <span>
+                {baselineMetrics.total_edges.toLocaleString()} road segments
+              </span>
+              <span>
+                {(baselineMetrics.avg_congestion_ratio * 100).toFixed(0)}% avg
+                congestion
               </span>
             </div>
           )}
@@ -180,7 +205,11 @@ export default function Home() {
         {/* Left sidebar */}
         <aside className="w-72 flex-shrink-0 bg-white border-r border-gray-100 flex flex-col overflow-y-auto">
           <div className="p-4 flex flex-col gap-6">
-            <PolicyInput presets={presets} onSimulate={runSimulation} isLoading={isLoading} />
+            <PolicyInput
+              presets={presets}
+              onSimulate={runSimulation}
+              isLoading={isLoading}
+            />
             <div className="border-t border-gray-100 pt-4">
               <AgentTimeline agents={agents} />
             </div>
@@ -258,7 +287,10 @@ export default function Home() {
               <ImpactMetrics baseline={baselineMetrics} impact={impactScores} />
             )}
             {activeTab === "report" && (
-              <ReportPanel recommendations={recommendations} isLoading={isLoading} />
+              <ReportPanel
+                recommendations={recommendations}
+                isLoading={isLoading}
+              />
             )}
           </div>
         </aside>

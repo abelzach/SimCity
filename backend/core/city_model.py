@@ -176,27 +176,27 @@ def graph_to_state_dict(G: nx.MultiDiGraph) -> Dict[str, Any]:
     """Serialize graph to a lightweight dict for LangGraph state."""
     nodes = {}
     for node_id, data in G.nodes(data=True):
-        nodes[str(node_id)] = {
+        nodes[node_id] = {
             "x": data.get("x", 0),
             "y": data.get("y", 0),
-            "street_count": data.get("street_count", 0),
         }
 
     edges = {}
     for u, v, key, data in G.edges(data=True, keys=True):
         edge_id = f"{u}-{v}-{key}"
         edges[edge_id] = {
-            "u": str(u),
-            "v": str(v),
+            "u": u,
+            "v": v,
+            "key": key,
+            "length": data.get("length", 100),
             "highway": data.get("highway", "unclassified"),
             "name": data.get("name", ""),
-            "length": data.get("length", 50),
-            "speed_kph": data.get("speed_kph", 30),
-            "capacity": data.get("capacity", 600),
-            "baseline_flow": data.get("baseline_flow", 0),
+            "capacity": data.get("capacity", 1000),
+            "speed_kph": data.get("speed_kph", 50),
+            "baseline_flow": data.get("baseline_flow", 500),
             "congestion_ratio": data.get("congestion_ratio", 0.5),
-            "travel_time": data.get("travel_time", 10),
-            "lanes": data.get("lanes", 1),
+            "travel_time": data.get("travel_time", 2),
+            "geometry": data.get("geometry"),
         }
 
     return {
@@ -205,6 +205,37 @@ def graph_to_state_dict(G: nx.MultiDiGraph) -> Dict[str, Any]:
         "node_count": G.number_of_nodes(),
         "edge_count": G.number_of_edges(),
     }
+
+
+def state_dict_to_graph(graph_data: Dict[str, Any]) -> nx.MultiDiGraph:
+    """Deserialize state dict back to NetworkX graph."""
+    G = nx.MultiDiGraph()
+    
+    # Add nodes
+    for node_id, data in graph_data.get("nodes", {}).items():
+        G.add_node(node_id, **data)
+    
+    # Add edges
+    for edge_id, data in graph_data.get("edges", {}).items():
+        u = data["u"]
+        v = data["v"]
+        key = data["key"]
+        edge_attrs = {
+            "length": data.get("length", 100),
+            "highway": data.get("highway", "unclassified"),
+            "name": data.get("name", ""),
+            "capacity": data.get("capacity", 1000),
+            "speed_kph": data.get("speed_kph", 50),
+            "baseline_flow": data.get("baseline_flow", 500),
+            "congestion_ratio": data.get("congestion_ratio", 0.5),
+            "travel_time": data.get("travel_time", 2),
+        }
+        if data.get("geometry"):
+            edge_attrs["geometry"] = data["geometry"]
+        
+        G.add_edge(u, v, key=key, **edge_attrs)
+    
+    return G
 
 
 def compute_baseline_metrics(graph_data: Dict[str, Any]) -> Dict[str, Any]:
