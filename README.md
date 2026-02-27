@@ -86,7 +86,7 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ![Application Screenshot 1](./public/images/image_1.png)
 ![Application Screenshot 2](./public/images/image_2.png)
-![Application Screenshot 3](./public/images/image_3.png)
+![Application Screenshot 3](./public/images/Image_3.png)
 ![Application Screenshot 4](./public/images/image_4.png)
 
 ## API Endpoints
